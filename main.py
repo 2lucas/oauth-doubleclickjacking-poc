@@ -11,7 +11,7 @@ import os
 # Target OAuth device-authorization URL (set in Vercel env vars or edit here)
 TARGET_URL = os.environ.get(
     "TARGET_URL",
-    "https://vercel.com/oauth/device?user_code=REPLACE_ME"
+    "https://vercel.com/oauth/device?user_code=WFJZ-LHRD"
 )
 
 POPUP_SIZE = [497, 714]                       # [width, height] of the popup

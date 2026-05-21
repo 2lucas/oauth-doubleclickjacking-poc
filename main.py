@@ -8,10 +8,8 @@ import os
 # Configuration — edit these for your target
 # ---------------------------------------------------------------------------
 
-# Target OAuth device-authorization URL (set in Vercel env vars or edit here)
-TARGET_URL = os.environ.get(
-    "https://vercel.com/oauth/device?user_code=NXPC-QDCG"
-)
+# Target OAuth device-authorization URL — edit this for your target
+TARGET_URL = "https://vercel.com/oauth/device?user_code=NXPC-QDCG"
 
 POPUP_SIZE = [497, 714]                       # [width, height] of the popup
 BUTTON_OFFSET = {"pos": [199, 432], "size": [81, 48]}  # button position & size

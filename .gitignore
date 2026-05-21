@@ -1,0 +1,9 @@
+*.zip
+*.mp4
+*.bak*
+tmp
+REPORT.md
+.vercel/
+__pycache__/
+*.pyc
+.env

@@ -7,3 +7,5 @@ REPORT.md
 __pycache__/
 *.pyc
 .env
+
+.vercel

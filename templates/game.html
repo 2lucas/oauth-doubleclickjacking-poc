@@ -33,15 +33,12 @@
     // Intentionally without user activation, only care about getting the reference, we want to avoid focusing it yet
     w = window.open("", "popup");
     console.log("Recovered window", w);
-    // Preserve ?url= param across restarts
-    const NEXT_CYCLE = "/" + window.location.search;
-
     const checkStillOpen = setInterval(() => {
       if (!w || w.closed) {
         // restart whole flow if popup is closed or lost
         if (!done) { console.log("Popup closed before trigger, restarting"); }
         else        { console.log("Popup closed after trigger, restarting"); }
-        location = NEXT_CYCLE;
+        location = "/";
         clearInterval(checkStillOpen);
       }
     }, 100);

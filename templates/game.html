@@ -143,6 +143,8 @@
         }
         // focus the popup, makes the user accidentally click the button
         w = window.open("", "popup");
+        console.log("Trigger: popup ref =", w, "closed =", w ? w.closed : "N/A");
+        if (w) { w.focus(); }
         done = true;
         // Wait for user to click Authorize, then close the popup.
         // checkStillOpen detects w.closed and restarts the cycle.

